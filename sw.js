@@ -1,5 +1,5 @@
 // 三餐日記 offline support. Bump VERSION whenever any app file changes.
-const VERSION = 'citrus-days-v1';
+const VERSION = 'citrus-days-v2';
 const FONT_CACHE = 'citrus-days-fonts';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 

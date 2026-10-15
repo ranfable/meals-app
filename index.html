@@ -73,7 +73,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; padding-top: env(safe-area-inset-top, 0px); }
+html { -webkit-text-size-adjust: 100%; }
 html, body { background: var(--bg); color: var(--ink); }
 body { margin: 0; font-family: var(--font-ui); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
 body::before { content: ""; display: block; height: 6px;
@@ -379,7 +379,9 @@ textarea.tin { font: 500 16px/1.5 var(--font-ui); resize: vertical; min-height: 
 .splash { position: fixed; inset: 0; z-index: 100; background: var(--gelato); display: grid; place-items: center; cursor: pointer; padding-inline: 16px; }
 .splash:not(.play):not(.skip) { animation: spGone .5s ease-in 6s forwards; } /* failsafe if the script never starts it */
 .sp-center { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; max-width: 30em; }
-.sp-word { font-family: var(--font-script); font-size: clamp(78px, 23vw, 148px); line-height: .95; color: var(--amalfi); -webkit-text-stroke: .6px currentColor; white-space: nowrap; padding-inline: .15em;
+/* extra padding (cancelled by negative margins) keeps the y's tail inside the masked box */
+.sp-word { font-family: var(--font-script); font-size: clamp(78px, 23vw, 148px); line-height: .95; color: var(--amalfi); -webkit-text-stroke: .6px currentColor; white-space: nowrap;
+  padding: .12em .15em .4em; margin-block: -.12em -.4em;
   -webkit-mask-image: linear-gradient(90deg, #000 44%, transparent 56%); mask-image: linear-gradient(90deg, #000 44%, transparent 56%);
   -webkit-mask-size: 230% 100%; mask-size: 230% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: 100% 0; mask-position: 100% 0; }
@@ -398,6 +400,9 @@ textarea.tin { font: 500 16px/1.5 var(--font-ui); resize: vertical; min-height: 
 @keyframes spUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes spBlink { 0%, 100% { transform: scale(.6); opacity: .35; } 50% { transform: scale(1.15); opacity: 1; } }
 @keyframes spGone { to { opacity: 0; visibility: hidden; } }
+
+/* invisible full-screen box; toggling it makes iOS re-measure the screen after the keyboard closes */
+#vh-heal { position: fixed; inset: 0; visibility: hidden; pointer-events: none; z-index: -1; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -443,6 +448,7 @@ textarea.tin { font: 500 16px/1.5 var(--font-ui); resize: vertical; min-height: 
 <div class="lightbox" id="lightbox" data-act="lb-close" hidden><img id="lb-img" alt=""><p id="lb-cap"></p></div>
 <div class="onboard" id="onboard" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div id="vh-heal" aria-hidden="true"></div>
 <div class="splash" id="splash" aria-label="開屏動畫，點一下跳過">
   <div class="sp-center">
     <span class="sp-word" aria-hidden="true">citrus days</span>
@@ -2099,6 +2105,32 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => { if (S.tab === 'overview') drawChart(); }, 150);
 });
+/* iPhone home-screen apps can keep a shrunken screen after the keyboard closes, which lifts the
+   bottom tabs; when that happens, flip an invisible full-screen box so iOS measures again. */
+const typing = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+const orient = () => (window.innerWidth > window.innerHeight ? 'land' : 'port');
+const maxVH = { [orient()]: window.innerHeight };
+window.addEventListener('resize', () => {
+  if (typing()) return;
+  const o = orient();
+  maxVH[o] = Math.max(maxVH[o] || 0, window.innerHeight);
+});
+function healViewport() {
+  if (typing()) return;
+  const o = orient();
+  if (!maxVH[o] || maxVH[o] - window.innerHeight <= 4) return;
+  const el = $('vh-heal'), y = window.scrollY;
+  el.style.display = 'none';
+  void el.offsetHeight;
+  el.style.display = '';
+  window.scrollTo(0, y);
+}
+document.addEventListener('focusout', () => {
+  if (!isStandalone()) return;
+  setTimeout(healViewport, 140);
+  setTimeout(healViewport, 600);
+});
+
 setInterval(() => {
   if (document.visibilityState !== 'visible' || S.tab !== 'today' || S.edit) return;
   if (S.followToday) S.viewDate = todayKey();

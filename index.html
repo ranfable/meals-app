@@ -322,7 +322,8 @@ textarea.tin { font: 500 16px/1.5 var(--font-ui); resize: vertical; min-height: 
 .status { font-size: 13px; color: var(--ink-2); margin: 12px 0 0; }
 
 /* bottom tabs */
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--nav-bg); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 6px 12px calc(6px + env(safe-area-inset-bottom, 0px)); }
+/* the iPhone home bar needs less room than the full inset; Android (inset 0) keeps 6px */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--nav-bg); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 6px 12px max(6px, calc(env(safe-area-inset-bottom, 0px) - 12px)); }
 .tabs-in { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; font: 700 12px var(--font-ui); padding: 6px 2px; color: var(--ink-3); background: none; border: 0; border-radius: 14px; cursor: pointer; min-height: 50px; }
 .tab svg { width: 24px; height: 24px; }
@@ -355,7 +356,7 @@ textarea.tin { font: 500 16px/1.5 var(--font-ui); resize: vertical; min-height: 
 .pv { position: relative; border-radius: 16px; overflow: hidden; background: var(--line); min-height: 120px; }
 .pv img { display: block; width: 100%; max-height: 240px; object-fit: cover; }
 .pv-acts { position: absolute; right: 8px; bottom: 8px; display: flex; gap: 6px; }
-.sh-foot { display: flex; align-items: center; gap: 10px; padding: 12px 18px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); flex-wrap: wrap; }
+.sh-foot { display: flex; align-items: center; gap: 10px; padding: 12px 18px max(14px, calc(env(safe-area-inset-bottom, 0px) - 4px)); border-top: 1px solid var(--line); flex-wrap: wrap; }
 .sh-foot .sp { flex: 1; }
 .sh-foot p { margin: 0; flex: 1 1 100%; font-size: 14px; }
 

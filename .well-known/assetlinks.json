@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.bowiling.meals.twa",
+        "sha256_cert_fingerprints": ["9E:E0:32:9D:9D:73:B9:4D:84:D8:96:EF:F9:F9:17:68:0D:AD:5F:82:DC:87:81:64:C1:99:F7:C5:A0:F7:25:C2"]
+      }
+    }]

@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.bowiling.meals.twa",
-        "sha256_cert_fingerprints": ["9E:E0:32:9D:9D:73:B9:4D:84:D8:96:EF:F9:F9:17:68:0D:AD:5F:82:DC:87:81:64:C1:99:F7:C5:A0:F7:25:C2"]
+        "sha256_cert_fingerprints": ["4C:79:79:EA:89:3E:54:72:20:2C:D8:9A:BB:6E:2F:D8:9B:48:67:5B:16:27:BB:4B:A2:6E:51:E0:16:A8:BD:58"]
       }
     }]
